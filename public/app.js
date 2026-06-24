@@ -93,6 +93,11 @@ function initApp() {
 
   // Render initial vocabulary
   renderVocabulary();
+
+  // Auto-load default video on start
+  if (youtubeUrlInput.value) {
+    loadVideo(youtubeUrlInput.value);
+  }
 }
 
 // Extract YouTube Video ID
@@ -199,17 +204,76 @@ async function fetchSubtitles(videoId) {
     countBadge.textContent = `${transcriptData.length} qator`;
     renderSubtitles(transcriptData);
   } catch (error) {
-    console.error('Error fetching subtitles:', error);
-    container.innerHTML = `
-      <div class="subtitles-placeholder">
-        <i class="fa-solid fa-triangle-exclamation sub-placeholder-icon" style="color: var(--danger-color)"></i>
-        <p style="color: var(--danger-color)">Subtitrlarni yuklab bo'lmadi.</p>
-        <p style="font-size: 12px; margin-top: 8px;">Ushbu videoda inglizcha subtitr mavjudligini tekshiring.</p>
-      </div>
-    `;
-    countBadge.textContent = 'Xato';
-    transcriptData = [];
+    console.warn('Backend transcript fetch failed, trying fallback public API...', error);
+    try {
+      const fallbackUrl = `https://youtube-transcript.ai/transcript/${videoId}.txt`;
+      const response = await fetch(fallbackUrl);
+      if (!response.ok) {
+        throw new Error(`Fallback API returned status ${response.status}`);
+      }
+      const text = await response.text();
+      const parsed = parseTextTranscript(text);
+      
+      if (parsed.length === 0) {
+        throw new Error('Parsed transcript is empty');
+      }
+      
+      transcriptData = parsed;
+      countBadge.textContent = `${transcriptData.length} qator`;
+      renderSubtitles(transcriptData);
+    } catch (fallbackError) {
+      console.error('Fallback transcript fetch also failed:', fallbackError);
+      container.innerHTML = `
+        <div class="subtitles-placeholder">
+          <i class="fa-solid fa-triangle-exclamation sub-placeholder-icon" style="color: var(--danger-color)"></i>
+          <p style="color: var(--danger-color)">Subtitrlarni yuklab bo'lmadi.</p>
+          <p style="font-size: 12px; margin-top: 8px;">Ushbu videoda inglizcha subtitr mavjudligini tekshiring.</p>
+        </div>
+      `;
+      countBadge.textContent = 'Xato';
+      transcriptData = [];
+    }
   }
+}
+
+// Parse plaintext Markdown transcript from fallback API
+function parseTextTranscript(text) {
+  const lines = text.split('\n');
+  const segments = [];
+  const timestampRegex = /^\[(\d+(?::\d+){1,2})\]\s*(.*)$/;
+  
+  for (let line of lines) {
+    line = line.trim();
+    if (!line) continue;
+    
+    const match = line.match(timestampRegex);
+    if (match) {
+      const timeStr = match[1];
+      const segmentText = match[2];
+      
+      const parts = timeStr.split(':').map(Number);
+      let seconds = 0;
+      if (parts.length === 2) {
+        seconds = parts[0] * 60 + parts[1];
+      } else if (parts.length === 3) {
+        seconds = parts[0] * 3600 + parts[1] * 60 + parts[2];
+      }
+      
+      segments.push({
+        start: seconds,
+        duration: 4, // default, will be adjusted
+        text: segmentText
+      });
+    }
+  }
+  
+  // Adjust durations dynamically
+  for (let i = 0; i < segments.length - 1; i++) {
+    const diff = segments[i+1].start - segments[i].start;
+    segments[i].duration = Math.max(1, Math.min(diff, 10)); // cap at 10s max duration
+  }
+  
+  return segments;
 }
 
 // Render Subtitles in the container
