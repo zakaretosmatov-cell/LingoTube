@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LingoTube - Learn English with YouTube Subtitles</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="logo-area">
+        <div class="logo-icon">
+          <i class="fa-brands fa-youtube"></i>
+        </div>
+        <div class="logo-text">
+          <h1>Lingo<span>Tube</span></h1>
+          <p>Learn English interactively</p>
+        </div>
+      </div>
+      
+      <!-- Target Language Selector -->
+      <div class="lang-selector-group">
+        <label for="target-lang"><i class="fa-solid fa-language"></i> Tarjima tili / Translate to:</label>
+        <select id="target-lang" class="custom-select">
+          <option value="uz" selected>O'zbekcha (Uzbek)</option>
+          <option value="ru">Русский (Russian)</option>
+          <option value="tr">Türkçe (Turkish)</option>
+          <option value="es">Español (Spanish)</option>
+          <option value="de">Deutsch (German)</option>
+          <option value="fr">Français (French)</option>
+          <option value="ar">العربية (Arabic)</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-container">
+    <!-- URL Input Section -->
+    <section class="url-input-section card">
+      <div class="input-wrapper">
+        <i class="fa-solid fa-link input-icon"></i>
+        <input type="text" id="youtube-url" placeholder="YouTube video havolasini kiriting (masalan: https://www.youtube.com/watch?v=dQw4w9WgXcQ)..." value="https://www.youtube.com/watch?v=dQw4w9WgXcQ">
+        <button id="load-btn" class="btn primary-btn">
+          <span>Yuklash / Load</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+      <div id="url-error" class="error-message hidden">
+        <i class="fa-solid fa-circle-exclamation"></i> Iltimos, to'g'ri YouTube havolasini kiriting.
+      </div>
+    </section>
+
+    <!-- App Main Workspace -->
+    <div class="workspace-grid">
+      
+      <!-- Left Column: Video & Dictionary -->
+      <div class="left-column">
+        <!-- Video Card -->
+        <section class="video-container card">
+          <div class="video-wrapper">
+            <!-- YouTube Iframe Player will load here -->
+            <div id="player"></div>
+            <div id="player-placeholder" class="player-placeholder">
+              <i class="fa-brands fa-youtube play-placeholder-icon"></i>
+              <p>Video yuklash uchun havola kiriting va "Yuklash" tugmasini bosing</p>
+            </div>
+          </div>
+          
+          <!-- Custom Speed Controller -->
+          <div class="player-controls">
+            <div class="control-label">
+              <i class="fa-solid fa-gauge-high"></i> Tezlik / Playback Speed:
+            </div>
+            <div class="speed-buttons">
+              <button class="speed-btn" data-speed="0.5">0.5x</button>
+              <button class="speed-btn" data-speed="0.75">0.75x</button>
+              <button class="speed-btn active" data-speed="1.0">1.0x</button>
+              <button class="speed-btn" data-speed="1.25">1.25x</button>
+              <button class="speed-btn" data-speed="1.5">1.5x</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Dictionary/Word Details Card -->
+        <section class="dictionary-container card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-book-open"></i> So'zlik / Dictionary</h3>
+          </div>
+          
+          <div id="dict-welcome" class="dict-content-placeholder">
+            <i class="fa-solid fa-arrow-pointer dict-pointer-icon animate-bounce"></i>
+            <p>Subtitrdagi istalgan so'z ustiga bossangiz, tarjimasi va talaffuzi shu yerda chiqadi.</p>
+          </div>
+          
+          <div id="dict-loading" class="dict-content-placeholder hidden">
+            <i class="fa-solid fa-circle-notch fa-spin dict-loading-icon"></i>
+            <p>Tarjima qilinmoqda...</p>
+          </div>
+
+          <div id="dict-error" class="dict-content-placeholder hidden error-text">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <p>Tarjima qilishda xatolik yuz berdi. Iltimos qaytadan urunib ko'ring.</p>
+          </div>
+
+          <div id="dict-result" class="dict-result hidden">
+            <div class="word-info-header">
+              <div class="word-pronounce-wrapper">
+                <span id="selected-word" class="word-title">word</span>
+                <button id="speak-btn" class="icon-btn tooltip" data-tooltip="Talaffuzni eshitish">
+                  <i class="fa-solid fa-volume-high"></i>
+                </button>
+              </div>
+              <button id="save-vocab-btn" class="btn outline-btn save-btn">
+                <i class="fa-regular fa-bookmark"></i> Saqlash
+              </button>
+            </div>
+            
+            <div class="translation-body">
+              <div class="translation-label">Tarjimasi / Translation:</div>
+              <div id="word-translation" class="word-translation">so'z</div>
+              <div class="source-lang-label">Dastlabki til: <span id="detected-lang">Inglizcha</span></div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Right Column: Interactive Subtitles -->
+      <div class="right-column">
+        <section class="subtitles-card card">
+          <div class="subtitles-header">
+            <div class="sub-header-title">
+              <h3><i class="fa-solid fa-closed-captioning"></i> Subtitrlar</h3>
+              <span id="subtitle-count" class="subtitle-badge">0 qator</span>
+            </div>
+            
+            <!-- Auto Scroll Toggle -->
+            <div class="sub-options">
+              <label class="toggle-switch">
+                <input type="checkbox" id="auto-scroll-toggle" checked>
+                <span class="slider"></span>
+                <span class="toggle-label">Auto-scroll</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Search Subtitles -->
+          <div class="sub-search-bar">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="search-subtitles" placeholder="Subtitrlardan so'z qidirish...">
+            <button id="clear-search-btn" class="clear-btn hidden"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+
+          <!-- Subtitle Listing Container -->
+          <div id="subtitles-container" class="subtitles-container">
+            <div class="subtitles-placeholder">
+              <i class="fa-solid fa-file-audio sub-placeholder-icon"></i>
+              <p>Video yuklangandan so'ng subtitrlar bu yerda namoyon bo'ladi</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Vocabulary Section -->
+    <section class="vocabulary-section card">
+      <div class="vocab-header-wrapper">
+        <div class="vocab-title-group">
+          <h2><i class="fa-solid fa-graduation-cap"></i> Mening lug'at daftaram (<span id="vocab-count">0</span> ta so'z)</h2>
+          <p>O'rganish uchun saqlangan so'zlar ro'yxati</p>
+        </div>
+        <div class="vocab-actions">
+          <button id="quiz-btn" class="btn accent-btn" disabled>
+            <i class="fa-solid fa-gamepad"></i> O'yin / Practice Quiz
+          </button>
+          <button id="clear-vocab-btn" class="btn danger-btn" disabled>
+            <i class="fa-solid fa-trash-can"></i> Hammasini o'chirish
+          </button>
+        </div>
+      </div>
+
+      <!-- Vocabulary Grid -->
+      <div id="vocab-grid" class="vocab-grid">
+        <!-- Will be populated via JS -->
+        <div class="vocab-empty">
+          <i class="fa-solid fa-bookmark empty-icon"></i>
+          <p>Sizda hali saqlangan so'zlar yo'q. Subtitrdagi so'zlarni tanlab "Saqlash" tugmasini bosing.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Quiz Modal -->
+  <div id="quiz-modal" class="modal hidden">
+    <div class="modal-content card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-graduation-cap"></i> So'z boyligini sinash</h3>
+        <button id="close-modal-btn" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="quiz-progress-bar">
+          <div id="quiz-progress" class="quiz-progress-fill" style="width: 0%"></div>
+        </div>
+        <div class="quiz-question-card">
+          <p class="quiz-question-label">Ushbu so'zning tarjimasini toping:</p>
+          <h2 id="quiz-word" class="quiz-word-display">word</h2>
+          
+          <div id="quiz-options" class="quiz-options-grid">
+            <!-- 4 multiple-choice options will be rendered here -->
+          </div>
+        </div>
+        <div id="quiz-feedback" class="quiz-feedback hidden">
+          <span id="quiz-feedback-text">To'g'ri!</span>
+          <button id="quiz-next-btn" class="btn primary-btn">Keyingisi <i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="app-footer">
+    <p>&copy; 2026 LingoTube. Barcha huquqlar himoyalangan. English learning made easy.</p>
+  </footer>
+
+  <!-- YouTube Player API script -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <!-- Frontend Javascript -->
+  <script src="app.js"></script>
+</body>
+</html>
