@@ -1317,3 +1317,8 @@ input:checked + .slider:before {
   opacity: 1;
   bottom: 135%;
 }
+
+/* Utility classes */
+.hidden {
+  display: none !important;
+}
