@@ -43,12 +43,140 @@
     </div>
   </header>
 
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <span class="hero-badge"><i class="fa-solid fa-sparkles"></i> Yangi o'rganish uslubi / New Learning Method</span>
+      <h1 class="hero-title">Ingliz tilini videodan <span>so'zma-so'z</span> o'rganing</h1>
+      <p class="hero-subtitle">
+        LingoTube har qanday YouTube videosini interaktiv darsga aylantiradi. Subtitrdagi istalgan so'zni bosing, tarjimasini ko'ring, talaffuzini eshiting va shaxsiy lug'atingizni yarating.
+      </p>
+      <div class="hero-ctas">
+        <button id="hero-start-btn" class="btn primary-btn">
+          <i class="fa-solid fa-rocket"></i> Boshlash / Start Learning
+        </button>
+        <button id="hero-demo-btn" class="btn outline-btn">
+          <i class="fa-solid fa-circle-play"></i> Demoni ko'rish / Watch Demo
+        </button>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <!-- Glow visual card representing the app mockup -->
+      <div class="mockup-card">
+        <div class="mockup-header">
+          <span class="mock-dot"></span>
+          <span class="mock-dot"></span>
+          <span class="mock-dot"></span>
+        </div>
+        <div class="mockup-body">
+          <div class="mockup-player">
+            <i class="fa-solid fa-play"></i>
+          </div>
+          <div class="mockup-subtitles">
+            <span class="mock-word">Learn</span>
+            <span class="mock-word">English</span>
+            <span class="mock-word active">interactively</span>
+            <span class="mock-word">step</span>
+            <span class="mock-word">by</span>
+            <span class="mock-word">step.</span>
+          </div>
+          <div class="mockup-tooltip">
+            <span class="tooltip-word">interactively</span>
+            <span class="tooltip-trans">interaktiv tarzda / o'zaro ta'sirda</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <main class="app-container">
+    <!-- Statistics Row -->
+    <section class="stats-grid">
+      <div class="stat-card card">
+        <div class="stat-icon pink-glow"><i class="fa-solid fa-users"></i></div>
+        <div class="stat-info">
+          <h3>10,000+</h3>
+          <p>O'rganuvchilar / Active Learners</p>
+        </div>
+      </div>
+      <div class="stat-card card">
+        <div class="stat-icon cyan-glow"><i class="fa-solid fa-language"></i></div>
+        <div class="stat-info">
+          <h3>500,000+</h3>
+          <p>Tarjima qilingan so'zlar / Words Translated</p>
+        </div>
+      </div>
+      <div class="stat-card card">
+        <div class="stat-icon purple-glow"><i class="fa-solid fa-circle-check"></i></div>
+        <div class="stat-info">
+          <h3>98.4%</h3>
+          <p>Mamnun foydalanuvchilar / Success Rate</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Curated Recommended Videos Gallery -->
+    <section class="recommended-section card">
+      <div class="section-title-group">
+        <h2><i class="fa-solid fa-photo-film"></i> Tavsiya etilgan videolar / Recommended Lessons</h2>
+        <p>Quyidagi tayyor inglizcha darslardan birini tanlang va o'rganishni darhol boshlang</p>
+      </div>
+      <div class="videos-gallery">
+        <!-- Video Card 1 -->
+        <div class="gallery-card" data-video-id="dQw4w9WgXcQ">
+          <div class="gallery-thumb" style="background-image: url('https://img.youtube.com/vi/dQw4w9WgXcQ/mqdefault.jpg')">
+            <span class="video-duration">3:32</span>
+            <div class="play-overlay"><i class="fa-solid fa-play"></i></div>
+          </div>
+          <div class="gallery-content">
+            <span class="diff-badge easy">Boshlang'ich / Easy</span>
+            <h4>Rick Astley - Never Gonna Give You Up</h4>
+            <p>Qo'shiq matni orqali so'z boyligingizni oshiring.</p>
+          </div>
+        </div>
+        <!-- Video Card 2 -->
+        <div class="gallery-card" data-video-id="iG9CE55wbtY">
+          <div class="gallery-thumb" style="background-image: url('https://img.youtube.com/vi/iG9CE55wbtY/mqdefault.jpg')">
+            <span class="video-duration">19:22</span>
+            <div class="play-overlay"><i class="fa-solid fa-play"></i></div>
+          </div>
+          <div class="gallery-content">
+            <span class="diff-badge medium">O'rta / Medium</span>
+            <h4>Do schools kill creativity? - TED Talk</h4>
+            <p>Sir Ken Robinsonning eng mashhur taqdimotini tinglang.</p>
+          </div>
+        </div>
+        <!-- Video Card 3 -->
+        <div class="gallery-card" data-video-id="LEjhYFDg_gU">
+          <div class="gallery-thumb" style="background-image: url('https://img.youtube.com/vi/LEjhYFDg_gU/mqdefault.jpg')">
+            <span class="video-duration">2:24</span>
+            <div class="play-overlay"><i class="fa-solid fa-play"></i></div>
+          </div>
+          <div class="gallery-content">
+            <span class="diff-badge hard">Qiyin / Advanced</span>
+            <h4>Inside Out 2 - Official Teaser Trailer</h4>
+            <p>Multfilm treyleridan kundalik iboralarni o'rganing.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Continue Learning Section (Dynamic) -->
+    <section id="continue-learning-section" class="continue-section card hidden">
+      <div class="continue-header">
+        <span class="continue-badge"><i class="fa-solid fa-clock-rotate-left"></i> Oxirgi dars / Continue Learning</span>
+        <h3 id="continue-video-title">Video yuklanmoqda...</h3>
+      </div>
+      <button id="continue-resume-btn" class="btn primary-btn">
+        <i class="fa-solid fa-play"></i> Davom ettirish / Resume
+      </button>
+    </section>
+
     <!-- URL Input Section -->
-    <section class="url-input-section card">
+    <section id="search-section" class="url-input-section card">
       <div class="input-wrapper">
         <i class="fa-solid fa-link input-icon"></i>
-        <input type="text" id="youtube-url" placeholder="YouTube video havolasini kiriting (masalan: https://www.youtube.com/watch?v=dQw4w9WgXcQ)..." value="https://www.youtube.com/watch?v=dQw4w9WgXcQ">
+        <input type="text" id="youtube-url" placeholder="O'zingiz hohlagan YouTube video havolasini kiriting (masalan: https://www.youtube.com/watch?v=dQw4w9WgXcQ)..." value="https://www.youtube.com/watch?v=dQw4w9WgXcQ">
         <button id="load-btn" class="btn primary-btn">
           <span>Yuklash / Load</span>
           <i class="fa-solid fa-arrow-right"></i>
@@ -62,7 +190,7 @@
     <!-- App Main Workspace -->
     <div class="workspace-grid">
       
-      <!-- Left Column: Video & Dictionary -->
+      <!-- Left Column: Video, Dictionary & Gamification -->
       <div class="left-column">
         <!-- Video Card -->
         <section class="video-container card">
@@ -71,8 +199,11 @@
             <div id="player"></div>
             <div id="player-placeholder" class="player-placeholder">
               <i class="fa-brands fa-youtube play-placeholder-icon"></i>
-              <p>Video yuklash uchun havola kiriting va "Yuklash" tugmasini bosing</p>
+              <p>Video yuklanmoqda. Agar yuklanish kechiksa, yuqoridagi "Yuklash" tugmasini bosing.</p>
             </div>
+            
+            <!-- Pulsing Loading Skeleton for Player -->
+            <div id="player-skeleton" class="skeleton skeleton-video hidden"></div>
           </div>
           
           <!-- Custom Speed Controller -->
@@ -119,7 +250,7 @@
                   <i class="fa-solid fa-volume-high"></i>
                 </button>
               </div>
-              <button id="save-vocab-btn" class="btn outline-btn save-btn">
+              <button id="save-vocab-btn" class="btn save-btn">
                 <i class="fa-regular fa-bookmark"></i> Saqlash
               </button>
             </div>
@@ -128,6 +259,58 @@
               <div class="translation-label">Tarjimasi / Translation:</div>
               <div id="word-translation" class="word-translation">so'z</div>
               <div class="source-lang-label">Dastlabki til: <span id="detected-lang">Inglizcha</span></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Gamification Widget Panel -->
+        <section class="gamification-panel card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-trophy text-gold"></i> Sizning yutuqlaringiz / Gamification</h3>
+          </div>
+          <div class="gamification-grid">
+            <!-- Streak Card -->
+            <div class="gamify-card streak-card">
+              <div class="gamify-icon-fire"><i class="fa-solid fa-fire animate-pulse"></i></div>
+              <div class="gamify-info">
+                <span id="streak-counter" class="gamify-stat">0 kun</span>
+                <span class="gamify-label">Muntazamlik zanjiri / Daily Streak</span>
+              </div>
+            </div>
+            <!-- Daily Challenge Card -->
+            <div class="gamify-card challenge-card">
+              <div class="gamify-icon-star"><i class="fa-solid fa-star"></i></div>
+              <div class="gamify-info">
+                <span class="gamify-label">Bugungi vazifa / Daily Challenge</span>
+                <span id="challenge-desc" class="gamify-desc">Lug'atga 3 ta so'z qo'shing</span>
+                <div class="challenge-progress-container">
+                  <div id="challenge-progress-fill" class="challenge-progress-fill" style="width: 0%"></div>
+                </div>
+                <span id="challenge-status" class="challenge-status">0 / 3</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Achievements Section -->
+          <div class="achievements-section">
+            <h4><i class="fa-solid fa-award"></i> Nishonlar / Achievements</h4>
+            <div class="badges-grid">
+              <div class="badge-item locked" id="badge-first-word" class="tooltip" data-tooltip="Birinchi so'zni saqlang">
+                <div class="badge-icon"><i class="fa-solid fa-bookmark"></i></div>
+                <span class="badge-title">Birinchi so'z</span>
+              </div>
+              <div class="badge-item locked" id="badge-vocab-builder" class="tooltip" data-tooltip="Lug'atingizga 10 ta so'z yig'ing">
+                <div class="badge-icon"><i class="fa-solid fa-book"></i></div>
+                <span class="badge-title">Lug'at Ustasi</span>
+              </div>
+              <div class="badge-item locked" id="badge-streak-3" class="tooltip" data-tooltip="3 kunlik muntazamlikka erishing">
+                <div class="badge-icon"><i class="fa-solid fa-fire"></i></div>
+                <span class="badge-title">Muntazamlik</span>
+              </div>
+              <div class="badge-item locked" id="badge-quiz-champion" class="tooltip" data-tooltip="Viktorinadan 100% natija ko'rsating">
+                <div class="badge-icon"><i class="fa-solid fa-trophy"></i></div>
+                <span class="badge-title">G'olib</span>
+              </div>
             </div>
           </div>
         </section>
@@ -161,6 +344,26 @@
 
           <!-- Subtitle Listing Container -->
           <div id="subtitles-container" class="subtitles-container">
+            <!-- Pulsing Loading Skeletons for Subtitles (Initially hidden) -->
+            <div id="subtitles-skeleton" class="hidden">
+              <div class="skeleton-line-wrapper">
+                <div class="skeleton skeleton-time"></div>
+                <div class="skeleton skeleton-text" style="width: 80%"></div>
+              </div>
+              <div class="skeleton-line-wrapper">
+                <div class="skeleton skeleton-time"></div>
+                <div class="skeleton skeleton-text" style="width: 90%"></div>
+              </div>
+              <div class="skeleton-line-wrapper">
+                <div class="skeleton skeleton-time"></div>
+                <div class="skeleton skeleton-text" style="width: 60%"></div>
+              </div>
+              <div class="skeleton-line-wrapper">
+                <div class="skeleton skeleton-time"></div>
+                <div class="skeleton skeleton-text" style="width: 75%"></div>
+              </div>
+            </div>
+
             <div class="subtitles-placeholder">
               <i class="fa-solid fa-file-audio sub-placeholder-icon"></i>
               <p>Video yuklangandan so'ng subtitrlar bu yerda namoyon bo'ladi</p>
@@ -196,6 +399,75 @@
         </div>
       </div>
     </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials-section">
+      <div class="section-title-center">
+        <h2>Foydalanuvchilarimiz nima deyishadi? / Testimonials</h2>
+        <p>Minglab ingliz tili o'rganuvchilar LingoTube orqali so'z boyligini oshirishdi</p>
+      </div>
+      <div class="testimonials-grid">
+        <div class="testimonial-card card">
+          <div class="testi-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+          <p class="testi-text">"Ushbu sayt menga ingliz tilidagi filmlarni tushunishga juda katta yordam berdi. Biror so'zni tushunmasam, shunchaki ustiga bosaman va tarjimasini ko'raman. Ajoyib g'oya!"</p>
+          <div class="testi-user">
+            <div class="testi-avatar" style="background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100')"></div>
+            <div class="testi-info">
+              <h5>Malika Karimova</h5>
+              <span>IELTS o'rganuvchi</span>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card card">
+          <div class="testi-rating"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+          <p class="testi-text">"Sinxronlash juda chiroyli ishlaydi. Video qayerga kelsa subtitr ham o'sha yerda turadi. So'zlarni talaffuzi bilan o'rganish juda qulay. Hamma til o'rganuvchilarga tavsiya etaman."</p>
+          <div class="testi-user">
+            <div class="testi-avatar" style="background-image: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100')"></div>
+            <div class="testi-info">
+              <h5>Jasur Bekov</h5>
+              <span>Dasturchi</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section (Accordion) -->
+    <section class="faq-section card">
+      <div class="section-title-group">
+        <h2><i class="fa-solid fa-circle-question"></i> Ko'p beriladigan savollar / FAQ</h2>
+        <p>LingoTube platformasi haqida savollaringizga javoblar</p>
+      </div>
+      <div class="faq-accordion">
+        <div class="faq-item">
+          <div class="faq-question">
+            <h4>LingoTube mutlaqo bepulmi?</h4>
+            <span class="faq-icon"><i class="fa-solid fa-chevron-down"></i></span>
+          </div>
+          <div class="faq-answer">
+            <p>Ha, LingoTube platformasidan foydalanish mutlaqo bepul. Siz istalgan YouTube havolasini qo'yib, ingliz tilini o'rganishingiz mumkin.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">
+            <h4>Xohlagan videomni yuklasam bo'ladimi?</h4>
+            <span class="faq-icon"><i class="fa-solid fa-chevron-down"></i></span>
+          </div>
+          <div class="faq-answer">
+            <p>Ha, faqatgina videoda inglizcha subtitrlar (avtomatik yaratilgan yoki yuklangan captions) mavjud bo'lishi kerak. Subtitri bo'lmagan videolar yuklansa, subtitr panelida xatolik chiqadi.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question">
+            <h4>So'zlar qanday saqlanadi?</h4>
+            <span class="faq-icon"><i class="fa-solid fa-chevron-down"></i></span>
+          </div>
+          <div class="faq-answer">
+            <p>Siz saqlagan barcha so'zlar brauzeringizning shaxsiy xotirasida (localStorage) saqlanadi. Keshni tozalamasangiz, ular hech qachon yo'qolmaydi va ularni takrorlashingiz mumkin.</p>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <!-- Quiz Modal -->
@@ -225,8 +497,43 @@
     </div>
   </div>
 
+  <!-- Rich Footer -->
   <footer class="app-footer">
-    <p>&copy; 2026 LingoTube. Barcha huquqlar himoyalangan. English learning made easy.</p>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo-area">
+          <div class="logo-icon"><i class="fa-brands fa-youtube"></i></div>
+          <div class="logo-text">
+            <h1 style="font-size: 20px;">Lingo<span>Tube</span></h1>
+            <p>Learn English interactively</p>
+          </div>
+        </div>
+        <p class="brand-desc">YouTube videolarini interaktiv darsga aylantiruvchi platforma.</p>
+        <div class="trust-badges">
+          <span class="trust-badge tooltip" data-tooltip="YouTube Player API yordamida himoyalangan"><i class="fa-solid fa-shield-halved"></i> Secured</span>
+          <span class="trust-badge tooltip" data-tooltip="100% Bepul xizmat"><i class="fa-solid fa-certificate"></i> Free</span>
+        </div>
+      </div>
+      <div class="footer-links">
+        <h4>Navigatsiya</h4>
+        <ul>
+          <li><a href="#search-section">Video yuklash</a></li>
+          <li><a href="#vocab-grid">Lug'at daftarim</a></li>
+          <li><a href="#quiz-btn">Mashqlar (Quiz)</a></li>
+        </ul>
+      </div>
+      <div class="footer-newsletter">
+        <h4>Yangi darslardan xabardor bo'ling</h4>
+        <p>Haftalik yangi inglizcha videolar ro'yxatini pochta orqali oling.</p>
+        <div class="newsletter-form">
+          <input type="email" placeholder="Pochta manzilingiz...">
+          <button class="btn primary-btn mini-btn" style="height: 38px;"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 LingoTube. Barcha huquqlar himoyalangan. English learning made easy.</p>
+    </div>
   </footer>
 
   <!-- YouTube Player API script -->
