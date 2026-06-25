@@ -13,13 +13,23 @@ let quizQuestions = [];
 let currentQuizIndex = 0;
 let quizScore = 0;
 
-// Initialize YouTube Player API
+// Initialize App directly when DOM is ready to prevent race conditions
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}
+
+// Initialize YouTube Player API (called by iframe_api script)
 function onYouTubeIframeAPIReady() {
   console.log("YouTube Player API Ready");
   playerReady = true;
   
-  // Set up event listeners once API is ready
-  initApp();
+  // Auto-load default video as soon as API is ready
+  const youtubeUrlInput = document.getElementById('youtube-url');
+  if (youtubeUrlInput && youtubeUrlInput.value) {
+    loadVideo(youtubeUrlInput.value);
+  }
 }
 
 // Ensure the function is global so YouTube API can find it
@@ -93,11 +103,6 @@ function initApp() {
 
   // Render initial vocabulary
   renderVocabulary();
-
-  // Auto-load default video on start
-  if (youtubeUrlInput.value) {
-    loadVideo(youtubeUrlInput.value);
-  }
 }
 
 // Extract YouTube Video ID
@@ -111,6 +116,12 @@ function extractVideoId(url) {
 
 // Load Video and Subtitles
 async function loadVideo(url) {
+  if (typeof YT === 'undefined' || !YT.Player) {
+    console.warn("YouTube API is not loaded yet. Retrying in 500ms...");
+    setTimeout(() => loadVideo(url), 500);
+    return;
+  }
+
   const videoId = extractVideoId(url);
   const urlError = document.getElementById('url-error');
   
