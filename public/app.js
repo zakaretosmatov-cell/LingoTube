@@ -8,6 +8,10 @@ let activeSegmentIndex = -1;
 let updateInterval = null;
 let selectedWord = '';
 let selectedWordTranslation = '';
+let currentUser = JSON.parse(sessionStorage.getItem('lingotube_user')) || null;
+let coursesCache = [];
+let activeVideoType = 'free';
+let authMode = 'login'; // 'login' or 'register'
 
 // LocalStorage State
 let vocabulary = JSON.parse(localStorage.getItem('lingotube_vocab')) || [];
@@ -66,6 +70,41 @@ function initApp() {
   // Hero CTAs
   const heroStartBtn = document.getElementById('hero-start-btn');
   const heroDemoBtn = document.getElementById('hero-demo-btn');
+
+  // Navigation Links
+  const navHomeBtn = document.getElementById('nav-home-btn');
+  const navVocabBtn = document.getElementById('nav-vocab-btn');
+  const navAdminBtn = document.getElementById('nav-admin-btn');
+
+  // Auth Modals & Forms
+  const closeAuthModalBtn = document.getElementById('close-auth-modal-btn');
+  const authForm = document.getElementById('auth-form');
+  const authToggleLink = document.getElementById('auth-toggle-link');
+  const googleAuthBtn = document.getElementById('google-auth-btn');
+
+  // Paywall actions
+  const paywallLoginBtn = document.getElementById('paywall-login-btn');
+  const paywallRegisterBtn = document.getElementById('paywall-register-btn');
+  const paywallGoogleBtn = document.getElementById('paywall-google-btn');
+  const paywallPricingBtn = document.getElementById('paywall-pricing-btn');
+
+  // Pricing & Checkout
+  const closePricingModalBtn = document.getElementById('close-pricing-modal-btn');
+  const checkoutPremiumBtn = document.getElementById('checkout-premium-btn');
+  const closeCheckoutModalBtn = document.getElementById('close-checkout-modal-btn');
+  const checkoutForm = document.getElementById('checkout-form');
+
+  // AI Quiz Button
+  const aiQuizBtn = document.getElementById('ai-quiz-btn');
+
+  // Chat Support elements
+  const chatWidgetBtn = document.getElementById('chat-widget-btn');
+  const closeChatBtn = document.getElementById('close-chat-btn');
+  const sendChatBtn = document.getElementById('send-chat-btn');
+  const chatInput = document.getElementById('chat-input');
+
+  // Admin Course CRUD
+  const adminAddCourseForm = document.getElementById('admin-add-course-form');
 
   // Load Video on Button Click
   loadBtn.addEventListener('click', () => {
@@ -136,8 +175,138 @@ function initApp() {
     });
   });
 
-  // Initialize Curated Video Preview Cards in gallery
-  initVideoGallery();
+  // Navigation Links Click handlers
+  if (navHomeBtn) {
+    navHomeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+      navHomeBtn.classList.add('active');
+      document.getElementById('admin-panel-section').classList.add('hidden');
+      document.getElementById('search-section').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  }
+
+  if (navVocabBtn) {
+    navVocabBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+      navVocabBtn.classList.add('active');
+      document.getElementById('admin-panel-section').classList.add('hidden');
+      document.getElementById('vocab-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  if (navAdminBtn) {
+    navAdminBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+      navAdminBtn.classList.add('active');
+      const adminSec = document.getElementById('admin-panel-section');
+      adminSec.classList.remove('hidden');
+      adminSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  // Auth Dialog Click handlers
+  if (closeAuthModalBtn) {
+    closeAuthModalBtn.addEventListener('click', closeAuthModal);
+  }
+
+  if (authForm) {
+    authForm.addEventListener('submit', handleAuthSubmit);
+  }
+
+  if (authToggleLink) {
+    authToggleLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      toggleAuthMode();
+    });
+  }
+
+  if (googleAuthBtn) {
+    googleAuthBtn.addEventListener('click', handleGoogleAuth);
+  }
+
+  // Paywall overlay action handlers
+  if (paywallLoginBtn) {
+    paywallLoginBtn.addEventListener('click', () => openAuthModal('login'));
+  }
+
+  if (paywallRegisterBtn) {
+    paywallRegisterBtn.addEventListener('click', () => openAuthModal('register'));
+  }
+
+  if (paywallGoogleBtn) {
+    paywallGoogleBtn.addEventListener('click', handleGoogleAuth);
+  }
+
+  if (paywallPricingBtn) {
+    paywallPricingBtn.addEventListener('click', openPricingModal);
+  }
+
+  // Pricing and Checkout handlers
+  if (closePricingModalBtn) {
+    closePricingModalBtn.addEventListener('click', () => {
+      document.getElementById('pricing-modal').classList.add('hidden');
+    });
+  }
+
+  if (checkoutPremiumBtn) {
+    checkoutPremiumBtn.addEventListener('click', openCheckoutModal);
+  }
+
+  if (closeCheckoutModalBtn) {
+    closeCheckoutModalBtn.addEventListener('click', () => {
+      document.getElementById('checkout-modal').classList.add('hidden');
+    });
+  }
+
+  if (checkoutForm) {
+    checkoutForm.addEventListener('submit', handleCheckoutSubmit);
+  }
+
+  // AI Quiz Button Handler
+  if (aiQuizBtn) {
+    aiQuizBtn.addEventListener('click', handleAiQuizClick);
+  }
+
+  // Chat Trigger and Close Handlers
+  if (chatWidgetBtn) {
+    chatWidgetBtn.addEventListener('click', () => {
+      const chatWin = document.getElementById('chat-window');
+      chatWin.classList.toggle('hidden');
+      
+      // Hide alert dot when user opens chat
+      const alertDot = chatWidgetBtn.querySelector('.chat-alert-dot');
+      if (alertDot) alertDot.classList.add('hidden');
+    });
+  }
+
+  if (closeChatBtn) {
+    closeChatBtn.addEventListener('click', () => {
+      document.getElementById('chat-window').classList.add('hidden');
+    });
+  }
+
+  if (sendChatBtn) {
+    sendChatBtn.addEventListener('click', () => chatbotSend());
+  }
+
+  if (chatInput) {
+    chatInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        chatbotSend();
+      }
+    });
+  }
+
+  // Admin Course CRUD Form Submit
+  if (adminAddCourseForm) {
+    adminAddCourseForm.addEventListener('submit', handleAdminAddCourse);
+  }
+
+  // Fetch Recommended Videos from Backend and load gallery
+  fetchAndRenderCourses();
 
   // Initialize FAQ accordions
   initFaqAccordions();
@@ -147,6 +316,9 @@ function initApp() {
 
   // Render initial vocabulary
   renderVocabulary();
+
+  // Update Auth header
+  updateAuthUI();
 }
 
 // Extract YouTube Video ID
@@ -181,6 +353,14 @@ async function loadVideo(url) {
   document.getElementById('subtitles-skeleton').classList.remove('hidden');
   document.getElementById('player-placeholder').classList.add('hidden');
   document.getElementById('subtitles-container').querySelectorAll('.sub-segment').forEach(s => s.classList.add('hidden'));
+
+  // Lookup course type in cache
+  const course = coursesCache.find(c => c.id === videoId);
+  activeVideoType = course ? course.type : 'free';
+
+  // Hide any active paywall overlays
+  document.getElementById('login-paywall').classList.add('hidden');
+  document.getElementById('premium-paywall').classList.add('hidden');
 
   // Initialize or reload player
   if (player) {
@@ -459,6 +639,25 @@ function formatTime(seconds) {
 
 // Sync subtitles scrolling and active states
 function syncSubtitles(currentTime) {
+  // Paywall checks (30s preview limit)
+  if (currentTime >= 30) {
+    if (!currentUser) {
+      // Guest: Pause video and show login paywall
+      if (player && player.pauseVideo) {
+        player.pauseVideo();
+      }
+      document.getElementById('login-paywall').classList.remove('hidden');
+      return;
+    } else if (currentUser.subscription !== 'premium' && activeVideoType === 'premium') {
+      // Free Tier User watching Premium lesson: Pause and show premium paywall
+      if (player && player.pauseVideo) {
+        player.pauseVideo();
+      }
+      document.getElementById('premium-paywall').classList.remove('hidden');
+      return;
+    }
+  }
+
   if (transcriptData.length === 0) return;
 
   let currentActiveIdx = -1;
@@ -1116,4 +1315,633 @@ if ('speechSynthesis' in window) {
   if (window.speechSynthesis.onvoiceschanged !== undefined) {
     window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
   }
+}
+
+// ==========================================================
+// LMS Auth Controllers & UI Managers
+// ==========================================================
+
+// Show toast notification
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}-toast`;
+
+  let icon = '<i class="fa-solid fa-circle-info"></i>';
+  if (type === 'success') {
+    icon = '<i class="fa-solid fa-circle-check"></i>';
+  } else if (type === 'error') {
+    icon = '<i class="fa-solid fa-circle-exclamation"></i>';
+  } else if (type === 'gold') {
+    icon = '<i class="fa-solid fa-crown text-gold"></i>';
+  }
+
+  toast.innerHTML = `
+    ${icon}
+    <span>${message}</span>
+  `;
+
+  container.appendChild(toast);
+
+  // Automatically remove toast after 5s
+  setTimeout(() => {
+    toast.remove();
+  }, 5000);
+}
+
+// Update authentication state header and admin privileges
+function updateAuthUI() {
+  const authContainer = document.getElementById('auth-status-container');
+  const navAdminBtn = document.getElementById('nav-admin-btn');
+  const adminPanelSection = document.getElementById('admin-panel-section');
+
+  if (!authContainer) return;
+
+  if (currentUser) {
+    // User is logged in
+    const firstLetter = currentUser.email ? currentUser.email[0].toUpperCase() : 'U';
+    const isPremium = currentUser.subscription === 'premium';
+    const tierBadge = isPremium 
+      ? '<span class="badge gold-badge" style="font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 20px; background: var(--gold-gradient); color: #05070f; box-shadow: 0 0 10px rgba(251, 191, 36, 0.4);"><i class="fa-solid fa-crown"></i> VIP</span>' 
+      : '<span class="badge free-badge" style="font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: var(--text-secondary);">FREE</span>';
+
+    authContainer.innerHTML = `
+      <div class="user-profile-btn" id="header-profile-menu">
+        <div class="user-avatar-circle">${firstLetter}</div>
+        <span class="user-email-text" style="font-size: 13px; font-weight: 600; color: white;">${currentUser.email}</span>
+        ${tierBadge}
+        <button id="header-logout-btn" class="btn outline-btn mini-btn" style="padding: 6px 12px; font-size: 11px; margin-left: 10px;">
+          <i class="fa-solid fa-right-from-bracket"></i> Chiqish
+        </button>
+      </div>
+    `;
+
+    // Hook logout action
+    document.getElementById('header-logout-btn').addEventListener('click', handleLogout);
+
+    // Enforce Admin Access
+    if (currentUser.role === 'admin') {
+      navAdminBtn.classList.remove('hidden');
+    } else {
+      navAdminBtn.classList.add('hidden');
+      adminPanelSection.classList.add('hidden');
+    }
+  } else {
+    // Guest User
+    authContainer.innerHTML = `
+      <button id="header-login-btn" class="btn outline-btn mini-btn"><i class="fa-solid fa-right-to-bracket"></i> Login</button>
+      <button id="header-register-btn" class="btn primary-btn mini-btn"><i class="fa-solid fa-user-plus"></i> Register</button>
+    `;
+
+    // Hook login/register buttons
+    document.getElementById('header-login-btn').addEventListener('click', () => openAuthModal('login'));
+    document.getElementById('header-register-btn').addEventListener('click', () => openAuthModal('register'));
+
+    navAdminBtn.classList.add('hidden');
+    adminPanelSection.classList.add('hidden');
+  }
+}
+
+// Open Auth dialog modal
+function openAuthModal(mode) {
+  authMode = mode;
+  const modal = document.getElementById('auth-modal');
+  const title = document.getElementById('auth-modal-title');
+  const submitBtn = document.getElementById('auth-submit-btn');
+  const errorMsg = document.getElementById('auth-error-msg');
+  const emailInput = document.getElementById('auth-email');
+  const passwordInput = document.getElementById('auth-password');
+
+  errorMsg.classList.add('hidden');
+  emailInput.value = '';
+  passwordInput.value = '';
+  modal.classList.remove('hidden');
+
+  if (mode === 'login') {
+    title.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Tizimga Kirish / Login';
+    submitBtn.textContent = 'Kirish / Login';
+    document.getElementById('auth-toggle-link').textContent = "Ro'yxatdan o'tish";
+    document.querySelector('.auth-toggle-prompt').firstChild.textContent = "Akkauntingiz yo'qmi? ";
+  } else {
+    title.innerHTML = '<i class="fa-solid fa-user-plus"></i> Ro\'yxatdan O\'tish / Register';
+    submitBtn.textContent = "Ro'yxatdan o'tish / Register";
+    document.getElementById('auth-toggle-link').textContent = "Kirish";
+    document.querySelector('.auth-toggle-prompt').firstChild.textContent = "Akkauntingiz bormi? ";
+  }
+}
+
+// Close Auth dialog modal
+function closeAuthModal() {
+  document.getElementById('auth-modal').classList.add('hidden');
+}
+
+// Toggle Auth mode (login vs register)
+function toggleAuthMode() {
+  if (authMode === 'login') {
+    openAuthModal('register');
+  } else {
+    openAuthModal('login');
+  }
+}
+
+// Handle login/register submit form
+async function handleAuthSubmit(e) {
+  e.preventDefault();
+  
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  const errorMsg = document.getElementById('auth-error-msg');
+  
+  if (!email || !password) {
+    errorMsg.textContent = "Iltimos barcha maydonlarni to'ldiring";
+    errorMsg.classList.remove('hidden');
+    return;
+  }
+
+  const endpoint = authMode === 'login' ? '/api/auth/login' : '/api/auth/register';
+
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Server error occurred');
+    }
+
+    // Success login/register
+    currentUser = data.user;
+    sessionStorage.setItem('lingotube_user', JSON.stringify(currentUser));
+    
+    closeAuthModal();
+    updateAuthUI();
+    showToast(`${currentUser.email} muvaffaqiyatli kirdi! 🎉`, 'success');
+
+    // Unlock achievements checking
+    checkAchievements();
+
+    // If video was blocked by paywall and user just authenticated, check if we can resume
+    checkAndResumeVideo();
+
+  } catch (err) {
+    console.error("Auth error:", err);
+    errorMsg.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${err.message}`;
+    errorMsg.classList.remove('hidden');
+  }
+}
+
+// Mock Google OAuth Auth
+async function handleGoogleAuth() {
+  const randomId = Math.floor(Math.random() * 1000);
+  const mockEmail = `google.student${randomId}@gmail.com`;
+  const mockName = `Google Student ${randomId}`;
+
+  try {
+    const response = await fetch('/api/auth/google', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: mockEmail, name: mockName })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Google auth simulation failed');
+    }
+
+    currentUser = data.user;
+    sessionStorage.setItem('lingotube_user', JSON.stringify(currentUser));
+    
+    closeAuthModal();
+    updateAuthUI();
+    showToast(`Google orqali kirdingiz: ${currentUser.email} 🚀`, 'success');
+
+    checkAchievements();
+    checkAndResumeVideo();
+
+  } catch (err) {
+    console.error("Google Auth error:", err);
+    showToast("Google orqali kirish simulyatsiyasi muvaffaqiyatsiz tugadi.", "error");
+  }
+}
+
+// Handle Logout
+function handleLogout() {
+  currentUser = null;
+  sessionStorage.removeItem('lingotube_user');
+  updateAuthUI();
+  showToast("Akkauntdan chiqdingiz. Sayt mehmon rejimidan ishlaydi.", 'info');
+
+  // Pause video if time is currently past 30s to re-trigger paywall
+  if (player && player.getCurrentTime && player.getCurrentTime() >= 30) {
+    player.pauseVideo();
+    document.getElementById('login-paywall').classList.remove('hidden');
+  }
+}
+
+// Check auth state to automatically resume playback
+function checkAndResumeVideo() {
+  if (player && player.getCurrentTime) {
+    const time = player.getCurrentTime();
+    if (time >= 30) {
+      if (currentUser) {
+        if (activeVideoType === 'premium' && currentUser.subscription !== 'premium') {
+          // Keep paused and show premium paywall
+          document.getElementById('login-paywall').classList.add('hidden');
+          document.getElementById('premium-paywall').classList.remove('hidden');
+        } else {
+          // Logged in, and plan unlocks video
+          document.getElementById('login-paywall').classList.add('hidden');
+          document.getElementById('premium-paywall').classList.add('hidden');
+          player.playVideo();
+        }
+      }
+    }
+  }
+}
+
+// ==========================================================
+// Pricing and Payment Simulator (Stripe Gateway Mockup)
+// ==========================================================
+
+// Open Pricing Modal
+function openPricingModal() {
+  const modal = document.getElementById('pricing-modal');
+  modal.classList.remove('hidden');
+
+  // If user is premium, change plan card button labels
+  const checkoutBtn = document.getElementById('checkout-premium-btn');
+  if (currentUser && currentUser.subscription === 'premium') {
+    checkoutBtn.textContent = 'Amaldagi VIP tarif';
+    checkoutBtn.disabled = true;
+  } else {
+    checkoutBtn.innerHTML = '<i class="fa-solid fa-credit-card"></i> VIP Premium Obuna';
+    checkoutBtn.disabled = false;
+  }
+}
+
+// Open Checkout Simulator Modal
+function openCheckoutModal() {
+  if (!currentUser) {
+    document.getElementById('pricing-modal').classList.add('hidden');
+    openAuthModal('login');
+    showToast("Premium sotib olish uchun iltimos tizimga kiring.", "info");
+    return;
+  }
+
+  // Pre-fill fields for Stripe simulation
+  document.getElementById('card-number').value = '4242 4242 4242 4242';
+  document.getElementById('card-expiry').value = '12/29';
+  document.getElementById('card-cvv').value = '242';
+  document.getElementById('card-name').value = currentUser.email.split('@')[0].toUpperCase();
+
+  document.getElementById('checkout-modal').classList.remove('hidden');
+}
+
+// Handle Stripe simulation submit
+async function handleCheckoutSubmit(e) {
+  e.preventDefault();
+
+  const cardNum = document.getElementById('card-number').value;
+  const cardExpiry = document.getElementById('card-expiry').value;
+  const cardCvv = document.getElementById('card-cvv').value;
+
+  if (cardNum.length < 19 || cardExpiry.length < 5 || cardCvv.length < 3) {
+    showToast("Iltimos karta ma'lumotlarini to'g'ri kiriting.", "error");
+    return;
+  }
+
+  showToast("Stripe to'lov shlyuzi yuklanmoqda... 💳", 'info');
+
+  try {
+    const response = await fetch('/api/user/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: currentUser.id, planType: 'premium' })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Upgrade subscription failed');
+    }
+
+    // Success checkout
+    currentUser = data.user;
+    sessionStorage.setItem('lingotube_user', JSON.stringify(currentUser));
+
+    // Close modals
+    document.getElementById('checkout-modal').classList.add('hidden');
+    document.getElementById('pricing-modal').classList.add('hidden');
+
+    // Update Header
+    updateAuthUI();
+
+    showToast("To'lov muvaffaqiyatli yakunlandi! Siz endi VIP a'zosiz! 💎🏆", 'success');
+    
+    // Unlock loyalty achievement
+    if (!unlockedAchievements.includes('quiz_champion')) {
+      unlockedAchievements.push('quiz_champion');
+      localStorage.setItem('lingotube_achievements', JSON.stringify(unlockedAchievements));
+      checkAchievements();
+    }
+
+    // Unblock premium player paywall
+    checkAndResumeVideo();
+
+  } catch (err) {
+    console.error("Payment error:", err);
+    showToast(`To'lovda xatolik yuz berdi: ${err.message}`, 'error');
+  }
+}
+
+// ==========================================================
+// Advanced AI Quiz compiler (Connected to Backend NLP APIs)
+// ==========================================================
+
+async function handleAiQuizClick() {
+  if (!currentUser) {
+    openAuthModal('login');
+    showToast("AI Test yaratish uchun iltimos tizimga kiring.", "info");
+    return;
+  }
+
+  if (currentUser.subscription !== 'premium') {
+    openPricingModal();
+    showToast("AI Generator Testi faqatgina VIP Premium foydalanuvchilar uchundir! 💎", 'gold');
+    return;
+  }
+
+  if (transcriptData.length === 0) {
+    showToast("Viktorina yaratish uchun avval videoni yuklang.", "error");
+    return;
+  }
+
+  showToast("Gemini NLP modeli orqali so'zlar tahlil qilinmoqda... 🪄🤖", "success");
+
+  // Open Quiz Modal directly and show spinner skeleton inside
+  const modal = document.getElementById('quiz-modal');
+  const quizWord = document.getElementById('quiz-word');
+  const optionsGrid = document.getElementById('quiz-options');
+  const feedbackDiv = document.getElementById('quiz-feedback');
+  
+  document.getElementById('quiz-header-title').innerHTML = '<i class="fa-solid fa-wand-magic-sparkles text-gold"></i> AI Generator Quiz';
+  document.getElementById('quiz-progress').style.width = '0%';
+  quizWord.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-gold" style="font-size: 40px;"></i><p style="font-size: 14px; margin-top: 10px; font-weight: 500; color: var(--text-secondary);">Subtitrdan murakkab inglizcha terminlar o\'rganilmoqda va tarjima qilinmoqda...</p>';
+  optionsGrid.innerHTML = '';
+  feedbackDiv.classList.add('hidden');
+  modal.classList.remove('hidden');
+
+  try {
+    const response = await fetch('/api/ai/generate-quiz', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        transcript: transcriptData,
+        to: document.getElementById('target-lang').value
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(data.error || 'AI quiz compilation failed');
+    }
+
+    quizQuestions = data.questions;
+    currentQuizIndex = 0;
+    quizScore = 0;
+
+    // Load first question
+    setTimeout(() => {
+      loadQuizQuestion();
+    }, 1500);
+
+  } catch (error) {
+    console.error("AI Quiz Generator error:", error);
+    showToast("AI Test yaratishda xatolik yuz berdi. Iltimos keyinroq urinib ko'ring.", "error");
+    modal.classList.add('hidden');
+  }
+}
+
+// ==========================================================
+// Simulated Live Support Chatbot
+// ==========================================================
+
+function chatbotSend() {
+  const chatInput = document.getElementById('chat-input');
+  const chatMessages = document.getElementById('chat-messages');
+  
+  if (!chatInput) return;
+
+  const text = chatInput.value.trim();
+  if (text === '') return;
+
+  // Append user message
+  const userMsgDiv = document.createElement('div');
+  userMsgDiv.className = 'msg user-msg';
+  userMsgDiv.innerHTML = `
+    <p>${escapeHtml(text)}</p>
+    <span class="msg-time">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+  `;
+  chatMessages.appendChild(userMsgDiv);
+  chatInput.value = '';
+  
+  // Scroll down
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+
+  // Mock bot typing state after 400ms
+  setTimeout(() => {
+    // Generate intelligent reply
+    let reply = "Savolingiz o'rganilmoqda. Tushunarsiz so'zlar bo'lsa dars davomida subtitrni bosing!";
+    const norm = text.toLowerCase();
+    
+    if (norm.includes('salom') || norm.includes('hello')) {
+      reply = "Salom! Men aqlli LingoBot ko'makchisiman. Sizga ingliz tili darslari yoki tarjima masalalarida qanday yordam bera olaman? 😊";
+    } else if (norm.includes('parol') || norm.includes('admin') || norm.includes('akkaunt')) {
+      reply = "Platformadagi test administrator kirish ma'lumotlari: email 'admin@lingotube.com', parol: 'admin123'. Ushbu ma'lumotlar bilan Admin panelni boshqarishingiz mumkin!";
+    } else if (norm.includes('premium') || norm.includes('vip') || norm.includes('obuna') || norm.includes('pul')) {
+      reply = "Premium VIP obuna orqali cheksiz AI darslari, Google translate orqali oqimli tarjimalar va barcha premium videolarni to'liq ko'rish imkoniyatiga ega bo'lasiz. Narxi oyiga $9.99! 💎";
+    } else if (norm.includes('kim') || norm.includes('nima')) {
+      reply = "Men LingoTube platformasining sun'iy intellektga asoslangan o'quv yordamchisiman.";
+    } else if (norm.includes(' IELTS') || norm.includes('gramatika') || norm.includes('grammar')) {
+      reply = "IELTS va grammatikani eng tez va oson o'rganish usuli - bu video darslarni muntazam tomosha qilishdir. Har kuni 3 tadan yangi so'zni lug'at daftarchangizga saqlang.";
+    }
+
+    const botMsgDiv = document.createElement('div');
+    botMsgDiv.className = 'msg bot-msg';
+    botMsgDiv.innerHTML = `
+      <p>${reply}</p>
+      <span class="msg-time">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+    `;
+    chatMessages.appendChild(botMsgDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    // Trigger alert dot if chat is closed
+    const chatWin = document.getElementById('chat-window');
+    if (chatWin.classList.contains('hidden')) {
+      const alertDot = document.getElementById('chat-widget-btn').querySelector('.chat-alert-dot');
+      if (alertDot) alertDot.classList.remove('hidden');
+      showToast("LingoBot Assistantdan yangi xabar keldi 💬", "info");
+    }
+
+  }, 1000);
+}
+
+// Escape HTML safety helper
+function escapeHtml(text) {
+  const map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+  return text.replace(/[&<>"']/g, m => map[m]);
+}
+
+// ==========================================================
+// Admin Panel Course CRUD Manager
+// ==========================================================
+
+async function handleAdminAddCourse(e) {
+  e.preventDefault();
+
+  const videoId = document.getElementById('admin-video-id').value.trim();
+  const title = document.getElementById('admin-video-title').value.trim();
+  const difficulty = document.getElementById('admin-video-difficulty').value;
+  const type = document.getElementById('admin-video-type').value;
+  const desc = document.getElementById('admin-video-desc').value.trim();
+
+  if (!videoId || !title) {
+    showToast("Iltimos, video ID va nomini kiriting.", "error");
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/courses', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: videoId,
+        title: title,
+        difficulty: difficulty,
+        type: type,
+        desc: desc,
+        duration: '5:00' // Mock duration
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to add lesson');
+    }
+
+    showToast("Dars muvaffaqiyatli ravishda bazaga qo'shildi! 🎬🚀", 'success');
+    
+    // Clear form inputs
+    document.getElementById('admin-video-id').value = '';
+    document.getElementById('admin-video-title').value = '';
+    document.getElementById('admin-video-desc').value = '';
+
+    // Reload courses list dynamically
+    fetchAndRenderCourses();
+
+  } catch (error) {
+    console.error("Admin add course error:", error);
+    showToast(`Xatolik: ${error.message}`, 'error');
+  }
+}
+
+// Fetch Courses from REST Endpoint
+async function fetchAndRenderCourses() {
+  const gallery = document.querySelector('.videos-gallery');
+  if (!gallery) return;
+
+  try {
+    const response = await fetch('/api/courses');
+    const data = await response.json();
+
+    if (response.ok && data.success) {
+      coursesCache = data.courses;
+      renderCoursesGallery(coursesCache);
+    }
+  } catch (error) {
+    console.error("Error fetching courses:", error);
+  }
+}
+
+// Render video card previews dynamically inside galleries
+function renderCoursesGallery(courses) {
+  const gallery = document.querySelector('.videos-gallery');
+  if (!gallery) return;
+
+  gallery.innerHTML = '';
+
+  courses.forEach(course => {
+    const card = document.createElement('div');
+    card.className = 'gallery-card';
+    card.dataset.videoId = course.id;
+
+    const thumb = document.createElement('div');
+    thumb.className = 'gallery-thumb';
+    thumb.style.backgroundImage = `url('https://img.youtube.com/vi/${course.id}/mqdefault.jpg')`;
+
+    const durationSpan = document.createElement('span');
+    durationSpan.className = 'video-duration';
+    durationSpan.textContent = course.duration || '5:00';
+    thumb.appendChild(durationSpan);
+
+    if (course.type === 'premium') {
+      const ribbon = document.createElement('span');
+      ribbon.className = 'premium-ribbon';
+      ribbon.innerHTML = '<i class="fa-solid fa-crown"></i> Premium';
+      thumb.appendChild(ribbon);
+    }
+
+    const playOverlay = document.createElement('div');
+    playOverlay.className = 'play-overlay';
+    playOverlay.innerHTML = '<i class="fa-solid fa-play"></i>';
+    thumb.appendChild(playOverlay);
+
+    const content = document.createElement('div');
+    content.className = 'gallery-content';
+
+    const diffBadge = document.createElement('span');
+    const diffNames = { easy: "Boshlang'ich", medium: "O'rta", hard: "Qiyin" };
+    const diffType = course.type === 'premium' ? 'Premium' : 'Free';
+    diffBadge.className = `diff-badge ${course.difficulty}`;
+    diffBadge.textContent = `${diffNames[course.difficulty] || course.difficulty} / ${diffType}`;
+    content.appendChild(diffBadge);
+
+    const titleH4 = document.createElement('h4');
+    titleH4.textContent = course.title;
+    content.appendChild(titleH4);
+
+    const descP = document.createElement('p');
+    descP.textContent = course.desc || '';
+    content.appendChild(descP);
+
+    card.appendChild(thumb);
+    card.appendChild(content);
+
+    // Card click handler loads video and scrolls to search section
+    card.addEventListener('click', () => {
+      const urlInput = document.getElementById('youtube-url');
+      const url = `https://www.youtube.com/watch?v=${course.id}`;
+      urlInput.value = url;
+
+      document.getElementById('search-section').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      loadVideo(url);
+    });
+
+    gallery.appendChild(card);
+  });
 }

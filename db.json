@@ -1,0 +1,63 @@
+{
+  "users": [
+    {
+      "id": "usr_1",
+      "email": "admin@lingotube.com",
+      "passwordHash": "$2b$10$1vNGRC1wII0FnxNHi1D9aeEfIze6AUfoXMGHyy1qsmamtr5KZ0kHK",
+      "role": "admin",
+      "subscription": "premium",
+      "streak": 5,
+      "achievements": [
+        "first_word",
+        "vocab_builder",
+        "streak_3"
+      ]
+    },
+    {
+      "id": "usr_2",
+      "email": "teacher@lingotube.com",
+      "passwordHash": "$2b$10$2nS.8roKcL9mPVHcG41UpuXj0NlbtfFISFfXpz91Wjhv9KDhhLADa",
+      "role": "teacher",
+      "subscription": "premium",
+      "streak": 3,
+      "achievements": [
+        "first_word"
+      ]
+    },
+    {
+      "id": "usr_3",
+      "email": "student@lingotube.com",
+      "passwordHash": "$2b$10$5l3CDRc2joEUo9p5VW42Set.ljw7b2qMOus2BDMA4yNlFGp6OKI0q",
+      "role": "student",
+      "subscription": "free",
+      "streak": 1,
+      "achievements": []
+    }
+  ],
+  "courses": [
+    {
+      "id": "dQw4w9WgXcQ",
+      "title": "Rick Astley - Never Gonna Give You Up",
+      "difficulty": "easy",
+      "type": "free",
+      "duration": "3:32",
+      "desc": "Qo'shiq matni orqali so'z boyligingizni oshiring."
+    },
+    {
+      "id": "iG9CE55wbtY",
+      "title": "Do schools kill creativity? - TED Talk",
+      "difficulty": "medium",
+      "type": "free",
+      "duration": "19:22",
+      "desc": "Sir Ken Robinsonning eng mashhur taqdimotini tinglang."
+    },
+    {
+      "id": "LEjhYFDg_gU",
+      "title": "Inside Out 2 - Official Teaser Trailer",
+      "difficulty": "hard",
+      "type": "premium",
+      "duration": "2:24",
+      "desc": "Multfilm treyleridan premium darajadagi kundalik iboralarni o'rganing."
+    }
+  ]
+}

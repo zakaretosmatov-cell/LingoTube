@@ -14,6 +14,9 @@
   <link rel="stylesheet" href="index.css?v=1.0.5">
 </head>
 <body>
+  <!-- Floating Notification Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
   <!-- Header -->
   <header class="app-header">
     <div class="header-container">
@@ -26,19 +29,34 @@
           <p>Learn English interactively</p>
         </div>
       </div>
+
+      <!-- Navigation Tabs (Dynamic) -->
+      <nav class="header-nav">
+        <a href="#hero-start-btn" class="nav-link active" id="nav-home-btn"><i class="fa-solid fa-house"></i> Bosh sahifa</a>
+        <a href="#vocab-grid" class="nav-link" id="nav-vocab-btn"><i class="fa-solid fa-bookmark"></i> Mening Lug'atim</a>
+        <a href="#" class="nav-link hidden" id="nav-admin-btn"><i class="fa-solid fa-lock-open"></i> Admin Panel</a>
+      </nav>
       
-      <!-- Target Language Selector -->
-      <div class="lang-selector-group">
-        <label for="target-lang"><i class="fa-solid fa-language"></i> Tarjima tili / Translate to:</label>
-        <select id="target-lang" class="custom-select">
-          <option value="uz" selected>O'zbekcha (Uzbek)</option>
-          <option value="ru">Русский (Russian)</option>
-          <option value="tr">Türkçe (Turkish)</option>
-          <option value="es">Español (Spanish)</option>
-          <option value="de">Deutsch (German)</option>
-          <option value="fr">Français (French)</option>
-          <option value="ar">العربية (Arabic)</option>
-        </select>
+      <!-- Target Language & Auth Status Group -->
+      <div class="header-right-group">
+        <div class="lang-selector-group">
+          <label for="target-lang"><i class="fa-solid fa-language"></i> Tarjima:</label>
+          <select id="target-lang" class="custom-select">
+            <option value="uz" selected>O'zbekcha</option>
+            <option value="ru">Русский</option>
+            <option value="tr">Türkçe</option>
+            <option value="es">Español</option>
+            <option value="de">Deutsch</option>
+            <option value="fr">Français</option>
+          </select>
+        </div>
+
+        <!-- Authentication status area (Login/Logout buttons) -->
+        <div id="auth-status-container" class="auth-status-container">
+          <!-- Default Guest UI -->
+          <button id="header-login-btn" class="btn outline-btn mini-btn"><i class="fa-solid fa-right-to-bracket"></i> Login</button>
+          <button id="header-register-btn" class="btn primary-btn mini-btn"><i class="fa-solid fa-user-plus"></i> Register</button>
+        </div>
       </div>
     </div>
   </header>
@@ -129,7 +147,7 @@
             <div class="play-overlay"><i class="fa-solid fa-play"></i></div>
           </div>
           <div class="gallery-content">
-            <span class="diff-badge easy">Boshlang'ich / Easy</span>
+            <span class="diff-badge easy">Boshlang'ich / Free</span>
             <h4>Rick Astley - Never Gonna Give You Up</h4>
             <p>Qo'shiq matni orqali so'z boyligingizni oshiring.</p>
           </div>
@@ -141,21 +159,22 @@
             <div class="play-overlay"><i class="fa-solid fa-play"></i></div>
           </div>
           <div class="gallery-content">
-            <span class="diff-badge medium">O'rta / Medium</span>
+            <span class="diff-badge medium">O'rta / Free</span>
             <h4>Do schools kill creativity? - TED Talk</h4>
             <p>Sir Ken Robinsonning eng mashhur taqdimotini tinglang.</p>
           </div>
         </div>
-        <!-- Video Card 3 -->
+        <!-- Video Card 3 (PREMIUM) -->
         <div class="gallery-card" data-video-id="LEjhYFDg_gU">
           <div class="gallery-thumb" style="background-image: url('https://img.youtube.com/vi/LEjhYFDg_gU/mqdefault.jpg')">
             <span class="video-duration">2:24</span>
+            <span class="premium-ribbon"><i class="fa-solid fa-crown"></i> Premium</span>
             <div class="play-overlay"><i class="fa-solid fa-play"></i></div>
           </div>
           <div class="gallery-content">
-            <span class="diff-badge hard">Qiyin / Advanced</span>
+            <span class="diff-badge hard">Qiyin / Premium</span>
             <h4>Inside Out 2 - Official Teaser Trailer</h4>
-            <p>Multfilm treyleridan kundalik iboralarni o'rganing.</p>
+            <p>Multfilm treyleridan premium darajadagi iboralarni o'rganing.</p>
           </div>
         </div>
       </div>
@@ -188,7 +207,7 @@
     </section>
 
     <!-- App Main Workspace -->
-    <div class="workspace-grid">
+    <div class="workspace-grid" id="main-workspace">
       
       <!-- Left Column: Video, Dictionary & Gamification -->
       <div class="left-column">
@@ -204,6 +223,32 @@
             
             <!-- Pulsing Loading Skeleton for Player -->
             <div id="player-skeleton" class="skeleton skeleton-video hidden"></div>
+
+            <!-- Login Paywall Overlay (30s lock) -->
+            <div id="login-paywall" class="paywall-overlay hidden">
+              <div class="paywall-content">
+                <div class="paywall-icon-box"><i class="fa-solid fa-lock"></i></div>
+                <h3>To'liq kirishni ochish / Unlock Full Access</h3>
+                <p>Ushbu video darsni to'liq tomosha qilish uchun tizimga kiring yoki ro'yxatdan o'ting.</p>
+                <div class="paywall-actions">
+                  <button id="paywall-login-btn" class="btn primary-btn">Login</button>
+                  <button id="paywall-register-btn" class="btn outline-btn">Ro'yxatdan o'tish</button>
+                </div>
+                <button id="paywall-google-btn" class="btn google-btn"><i class="fa-brands fa-google"></i> Google orqali davom etish</button>
+              </div>
+            </div>
+
+            <!-- Premium Paywall Overlay -->
+            <div id="premium-paywall" class="paywall-overlay hidden">
+              <div class="paywall-content">
+                <div class="paywall-icon-box gold"><i class="fa-solid fa-crown animate-pulse"></i></div>
+                <h3>Premium Video Dars</h3>
+                <p>Ushbu dars premium turkumiga kiradi. Uni tomosha qilish uchun Premium obunaga a'zo bo'ling.</p>
+                <div class="paywall-actions">
+                  <button id="paywall-pricing-btn" class="btn primary-btn gold-btn"><i class="fa-solid fa-gem"></i> Premiumga a'zo bo'lish</button>
+                </div>
+              </div>
+            </div>
           </div>
           
           <!-- Custom Speed Controller -->
@@ -266,7 +311,7 @@
         <!-- Gamification Widget Panel -->
         <section class="gamification-panel card">
           <div class="card-header">
-            <h3><i class="fa-solid fa-trophy text-gold"></i> Sizning yutuqlaringiz / Gamification</h3>
+            <h3><i class="fa-solid fa-trophy text-gold"></i> Sizning natijalaringiz / Gamification</h3>
           </div>
           <div class="gamification-grid">
             <!-- Streak Card -->
@@ -335,15 +380,22 @@
             </div>
           </div>
 
-          <!-- Search Subtitles -->
-          <div class="sub-search-bar">
-            <i class="fa-solid fa-magnifying-glass search-icon"></i>
-            <input type="text" id="search-subtitles" placeholder="Subtitrlardan so'z qidirish...">
-            <button id="clear-search-btn" class="clear-btn hidden"><i class="fa-solid fa-xmark"></i></button>
+          <!-- Search Subtitles & AI Quiz generator -->
+          <div class="sub-controls-row">
+            <div class="sub-search-bar" style="flex: 1; margin-bottom: 0;">
+              <i class="fa-solid fa-magnifying-glass search-icon"></i>
+              <input type="text" id="search-subtitles" placeholder="Subtitrlardan so'z qidirish...">
+              <button id="clear-search-btn" class="clear-btn hidden"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <!-- AI Quiz Generator button -->
+            <button id="ai-quiz-btn" class="btn primary-btn tooltip" data-tooltip="Subtitrdagi so'zlardan avtomatik AI test yaratish">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> AI Test
+            </button>
           </div>
 
           <!-- Subtitle Listing Container -->
-          <div id="subtitles-container" class="subtitles-container">
+          <div id="subtitles-container" class="subtitles-container" style="margin-top: 14px;">
             <!-- Pulsing Loading Skeletons for Subtitles (Initially hidden) -->
             <div id="subtitles-skeleton" class="hidden">
               <div class="skeleton-line-wrapper">
@@ -358,10 +410,6 @@
                 <div class="skeleton skeleton-time"></div>
                 <div class="skeleton skeleton-text" style="width: 60%"></div>
               </div>
-              <div class="skeleton-line-wrapper">
-                <div class="skeleton skeleton-time"></div>
-                <div class="skeleton skeleton-text" style="width: 75%"></div>
-              </div>
             </div>
 
             <div class="subtitles-placeholder">
@@ -373,8 +421,82 @@
       </div>
     </div>
 
+    <!-- Admin Panel Tab Container (Hidden by default, shown to role: 'admin') -->
+    <section id="admin-panel-section" class="admin-panel-section card hidden">
+      <div class="card-header">
+        <h2><i class="fa-solid fa-lock-open text-gold animate-pulse"></i> LingoTube Admin Control Panel</h2>
+        <p>Tizim analitikasi, obunalar, foydalanuvchilar va darslar boshqaruvi</p>
+      </div>
+
+      <!-- Admin Grid Layout -->
+      <div class="admin-dashboard-grid">
+        <!-- Analytics Cards -->
+        <div class="admin-charts card">
+          <h4><i class="fa-solid fa-chart-line"></i> Tizim Analitikasi / Analytics</h4>
+          <div class="charts-container">
+            <!-- Simulated Bar chart -->
+            <div class="bar-chart-card">
+              <h5>Kunlik faol a'zolar (DAU)</h5>
+              <div class="bar-chart">
+                <div class="bar" style="height: 40%" data-label="Dush"></div>
+                <div class="bar" style="height: 65%" data-label="Sesh"></div>
+                <div class="bar" style="height: 50%" data-label="Chor"></div>
+                <div class="bar" style="height: 85%" data-label="Pay"></div>
+                <div class="bar" style="height: 95%" data-label="Jum"></div>
+              </div>
+            </div>
+            <!-- Progress stats circular -->
+            <div class="donut-chart-card">
+              <h5>Darslarni tugatish foizi</h5>
+              <div class="radial-progress-mock">
+                <span>78%</span>
+              </div>
+              <p style="font-size: 12px; color: var(--text-secondary); text-align: center; margin-top: 8px;">Tugatilish sur'ati o'tgan haftaga nisbatan +12% yuqori</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Video CRUD manager -->
+        <div class="admin-crud card">
+          <h4><i class="fa-solid fa-plus"></i> Yangi Dars Qo'shish / Add Lesson</h4>
+          <form id="admin-add-course-form" class="admin-form">
+            <div class="form-group">
+              <label>YouTube Video ID</label>
+              <input type="text" id="admin-video-id" placeholder="masalan: dQw4w9WgXcQ" required>
+            </div>
+            <div class="form-group">
+              <label>Dars Nomi / Title</label>
+              <input type="text" id="admin-video-title" placeholder="masalan: Rick Astley - Song" required>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Qiyinchilik / Level</label>
+                <select id="admin-video-difficulty" class="custom-select">
+                  <option value="easy">Easy (Boshlang'ich)</option>
+                  <option value="medium">Medium (O'rta)</option>
+                  <option value="hard">Hard (Qiyin)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Turi / Type</label>
+                <select id="admin-video-type" class="custom-select">
+                  <option value="free">Free (Bepul)</option>
+                  <option value="premium">Premium</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Tavsifi / Description</label>
+              <input type="text" id="admin-video-desc" placeholder="Dars haqida qisqacha ma'lumot...">
+            </div>
+            <button type="submit" class="btn primary-btn"><i class="fa-solid fa-save"></i> Darsni bazaga qo'shish</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
     <!-- Vocabulary Section -->
-    <section class="vocabulary-section card">
+    <section class="vocabulary-section card" id="vocab-section">
       <div class="vocab-header-wrapper">
         <div class="vocab-title-group">
           <h2><i class="fa-solid fa-graduation-cap"></i> Mening lug'at daftaram (<span id="vocab-count">0</span> ta so'z)</h2>
@@ -392,7 +514,6 @@
 
       <!-- Vocabulary Grid -->
       <div id="vocab-grid" class="vocab-grid">
-        <!-- Will be populated via JS -->
         <div class="vocab-empty">
           <i class="fa-solid fa-bookmark empty-icon"></i>
           <p>Sizda hali saqlangan so'zlar yo'q. Subtitrdagi so'zlarni tanlab "Saqlash" tugmasini bosing.</p>
@@ -432,7 +553,7 @@
       </div>
     </section>
 
-    <!-- FAQ Section (Accordion) -->
+    <!-- FAQ Section -->
     <section class="faq-section card">
       <div class="section-title-group">
         <h2><i class="fa-solid fa-circle-question"></i> Ko'p beriladigan savollar / FAQ</h2>
@@ -445,7 +566,7 @@
             <span class="faq-icon"><i class="fa-solid fa-chevron-down"></i></span>
           </div>
           <div class="faq-answer">
-            <p>Ha, LingoTube platformasidan foydalanish mutlaqo bepul. Siz istalgan YouTube havolasini qo'yib, ingliz tilini o'rganishingiz mumkin.</p>
+            <p>LingoTube-dagi aksariyat darslar va xizmatlar bepul. Bizda o'ta qiziqarli filmlar treyleri va murakkab kinolar premium tarifga kiritilgan bo'lib, unga arzon narxdagi Premium tarif orqali to'liq kirish mumkin.</p>
           </div>
         </div>
         <div class="faq-item">
@@ -470,11 +591,133 @@
     </section>
   </main>
 
-  <!-- Quiz Modal -->
+  <!-- ----------------- CORE LMS & AUTH MODALS ----------------- -->
+
+  <!-- AUTHENTICATION DIALOG MODAL (Login & Register Form) -->
+  <div id="auth-modal" class="modal hidden">
+    <div class="modal-content card" style="max-width: 420px;">
+      <div class="modal-header">
+        <h3 id="auth-modal-title"><i class="fa-solid fa-right-to-bracket"></i> Tizimga Kirish / Login</h3>
+        <button id="close-auth-modal-btn" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="auth-form" class="admin-form">
+          <div class="form-group">
+            <label>Elektron Pochta / Email</label>
+            <input type="email" id="auth-email" placeholder="example@gmail.com" required autocomplete="email">
+          </div>
+          <div class="form-group">
+            <label>Parol / Password</label>
+            <input type="password" id="auth-password" placeholder="••••••••" required autocomplete="current-password">
+          </div>
+          <div id="auth-error-msg" class="error-message hidden" style="margin-bottom: 12px; margin-top: 0;">
+            <i class="fa-solid fa-circle-exclamation"></i>
+          </div>
+          <button type="submit" id="auth-submit-btn" class="btn primary-btn" style="width: 100%;">Kirish / Login</button>
+        </form>
+        
+        <div class="auth-divider">
+          <span>Yoki / Or</span>
+        </div>
+        
+        <button id="google-auth-btn" class="btn google-btn"><i class="fa-brands fa-google"></i> Google orqali kirish</button>
+        
+        <p class="auth-toggle-prompt">
+          Akkauntingiz yo'qmi? <a href="#" id="auth-toggle-link">Ro'yxatdan o'tish</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MONETIZATION / PRICING MODAL -->
+  <div id="pricing-modal" class="modal hidden">
+    <div class="modal-content card" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-gem text-gold animate-pulse"></i> Tariflarga a'zolik / Upgrade Plan</h3>
+        <button id="close-pricing-modal-btn" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="pricing-cards-container">
+          <!-- Free Plan -->
+          <div class="pricing-plan-card">
+            <h4>Free (Bepul)</h4>
+            <div class="plan-price">$0 <span>/ oy</span></div>
+            <ul>
+              <li><i class="fa-solid fa-check"></i> Bepul videolarga to'liq kirish</li>
+              <li><i class="fa-solid fa-check"></i> Subtitrlar va so'z bosganda tarjima</li>
+              <li><i class="fa-solid fa-check"></i> Lug'at daftarchasi</li>
+              <li><i class="fa-solid fa-xmark" style="color: var(--danger-color)"></i> Premium videolar (30s limit)</li>
+              <li><i class="fa-solid fa-xmark" style="color: var(--danger-color)"></i> AI Test yaratuvchi tizim</li>
+            </ul>
+            <button class="btn outline-btn" disabled>Amaldagi tarif</button>
+          </div>
+          <!-- Premium Plan -->
+          <div class="pricing-plan-card premium">
+            <span class="popular-badge">Tavsiya etiladi</span>
+            <h4>Premium VIP</h4>
+            <div class="plan-price">$9.99 <span>/ oy</span></div>
+            <ul>
+              <li><i class="fa-solid fa-check"></i> Barcha premium kinolarga 100% ruxsat</li>
+              <li><i class="fa-solid fa-check"></i> Cheksiz AI Test (Quiz) yaratish</li>
+              <li><i class="fa-solid fa-check"></i> 15+ qo'shimcha yutuq nishonlari</li>
+              <li><i class="fa-solid fa-check"></i> Maxsus sertifikatlar va imtiyozlar</li>
+              <li><i class="fa-solid fa-check"></i> Reklamasiz va cheklovlarsiz o'rganish</li>
+            </ul>
+            <button id="checkout-premium-btn" class="btn primary-btn gold-btn"><i class="fa-solid fa-credit-card"></i> Sotib olish</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHECKOUT MODAL (Stripe-like Payment Gateway Simulator) -->
+  <div id="checkout-modal" class="modal hidden">
+    <div class="modal-content card" style="max-width: 440px;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-lock text-gold"></i> Stripe Checkout (Simulyator)</h3>
+        <button id="close-checkout-modal-btn" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="checkout-summary">
+          <span>VIP Premium Obuna</span>
+          <strong>$9.99 / oy</strong>
+        </div>
+        <form id="checkout-form" class="admin-form">
+          <div class="form-group">
+            <label>Karta Raqami / Card Number</label>
+            <div class="input-wrapper" style="padding: 0 10px;">
+              <i class="fa-solid fa-credit-card input-icon"></i>
+              <input type="text" id="card-number" placeholder="4242 4242 4242 4242" required maxlength="19" pattern="\d{4}\s\d{4}\s\d{4}\s\d{4}">
+            </div>
+            <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px;">* Istalgan raqamni kiriting (masalan, 4242...)</span>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Muddati / Expiry</label>
+              <input type="text" id="card-expiry" placeholder="MM/YY" required maxlength="5" pattern="\d{2}/\d{2}">
+            </div>
+            <div class="form-group">
+              <label>CVC / CVV</label>
+              <input type="password" id="card-cvv" placeholder="123" required maxlength="3" pattern="\d{3}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Karta egasining ismi / Cardholder</label>
+            <input type="text" id="card-name" placeholder="John Doe" required>
+          </div>
+          <button type="submit" class="btn primary-btn gold-btn" style="width: 100%; margin-top: 12px;">
+            <i class="fa-solid fa-shield-halved"></i> To'lash / Pay $9.99
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz Modal (Dynamic & Custom Quizzes) -->
   <div id="quiz-modal" class="modal hidden">
     <div class="modal-content card">
       <div class="modal-header">
-        <h3><i class="fa-solid fa-graduation-cap"></i> So'z boyligini sinash</h3>
+        <h3 id="quiz-header-title"><i class="fa-solid fa-graduation-cap"></i> So'z boyligini sinash</h3>
         <button id="close-modal-btn" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="modal-body">
@@ -486,13 +729,48 @@
           <h2 id="quiz-word" class="quiz-word-display">word</h2>
           
           <div id="quiz-options" class="quiz-options-grid">
-            <!-- 4 multiple-choice options will be rendered here -->
+            <!-- 4 options will be rendered here -->
           </div>
         </div>
         <div id="quiz-feedback" class="quiz-feedback hidden">
           <span id="quiz-feedback-text">To'g'ri!</span>
           <button id="quiz-next-btn" class="btn primary-btn">Keyingisi <i class="fa-solid fa-chevron-right"></i></button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ----------------- SIMULATED LIVE CHAT SUPPORT WIDGET ----------------- -->
+  <div class="chat-widget-container">
+    <button id="chat-widget-btn" class="chat-trigger-btn tooltip" data-tooltip="Tutor / Ko'makchi bilan chat">
+      <i class="fa-solid fa-comment-dots"></i>
+      <span class="chat-alert-dot"></span>
+    </button>
+    
+    <div id="chat-window" class="chat-window card hidden">
+      <div class="chat-header">
+        <div class="chat-tutor-info">
+          <div class="tutor-avatar"><i class="fa-solid fa-robot"></i></div>
+          <div class="tutor-name-status">
+            <h5>LingoBot Assistant</h5>
+            <span>Online ko'makchi</span>
+          </div>
+        </div>
+        <button id="close-chat-btn" class="close-chat-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      
+      <!-- Messages window scrollable -->
+      <div id="chat-messages" class="chat-messages">
+        <div class="msg bot-msg">
+          <p>Salom! Men LingoTube aqlli ko'makchisiman. Ingliz tili grammatikasi, so'zlar tarjimasi yoki saytdan foydalanish bo'yicha savollaringiz bo'lsa, bemalol yozing! 😊</p>
+          <span class="msg-time">hozirgina</span>
+        </div>
+      </div>
+      
+      <!-- Messages input box -->
+      <div class="chat-input-area">
+        <input type="text" id="chat-input" placeholder="Savolingizni yozing...">
+        <button id="send-chat-btn" class="btn primary-btn mini-btn" style="padding: 10px 14px;"><i class="fa-solid fa-paper-plane"></i></button>
       </div>
     </div>
   </div>
@@ -518,7 +796,7 @@
         <h4>Navigatsiya</h4>
         <ul>
           <li><a href="#search-section">Video yuklash</a></li>
-          <li><a href="#vocab-grid">Lug'at daftarim</a></li>
+          <li><a href="#vocab-section">Lug'at daftarim</a></li>
           <li><a href="#quiz-btn">Mashqlar (Quiz)</a></li>
         </ul>
       </div>
